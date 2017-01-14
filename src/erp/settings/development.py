@@ -1,6 +1,7 @@
 from .base import *             # NOQA
 import sys
 import logging.config
+from django.contrib import admin
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -84,3 +85,4 @@ LOGGING = {
 }
 
 logging.config.dictConfig(LOGGING)
+admin.site.site_url = '/api/list_everything'

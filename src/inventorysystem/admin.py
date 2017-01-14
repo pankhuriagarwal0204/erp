@@ -5,3 +5,4 @@ import models
 
 admin.site.register(models.ItemType)
 admin.site.register(models.Item)
+admin.site.register(models.Department)

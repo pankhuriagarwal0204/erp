@@ -4,6 +4,17 @@ from django.db import models
 import uuid
 from django.conf import settings
 from simple_history.models import HistoricalRecords
+from datetime import datetime
+
+def get_created_date():
+	return datetime.now().strftime("%m-%y")
+
+class Department(models.Model):
+	name = models.CharField(max_length=100)
+	short_name = models.SlugField()
+
+	def __str__(self):
+		return str(self.short_name)
 
 
 class ItemType(models.Model):
@@ -15,6 +26,8 @@ class ItemType(models.Model):
     )
     uuid = models.UUIDField(editable=False, primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=100, unique=True)
+    product_classification = models.CharField(unique=True, max_length=100, null=True)
+    product_type = models.CharField(unique=True, max_length=100, null=True)
     last_updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS, default="active")
     total_quantity = models.IntegerField(default=0)
@@ -27,6 +40,7 @@ class ItemType(models.Model):
     returned_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name='returned_by')
     quantity_returned = models.IntegerField(default=0, null=True, blank=True)
     returned_on = models.DateTimeField(null=True, blank=True)
+    department = models.ForeignKey(Department, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -51,6 +65,8 @@ class ItemType(models.Model):
             for i in range(0, self.total_quantity):
                 item_name = self.name + str(i+1)
                 item_instance = Item(itemname=item_name)
+                item_instance.department = self.department
+                item_instance.re_pr = "CR-" + str(item_instance.department) + "-" + item_instance.batch_code + "-" + str(item_instance.id)
                 item_instance.save()
                 self.item_set.add(item_instance)
 
@@ -134,11 +150,17 @@ class ItemType(models.Model):
 
 class Item(models.Model):
 
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
     id = models.UUIDField(editable=False, primary_key=True, default=uuid.uuid4)
+    batch_code = models.CharField(default=get_created_date(), max_length=1000)
     available = models.BooleanField(default=True)
     itemtype = models.ForeignKey(ItemType, null=True, blank=True, related_name='item_set')
     itemname = models.CharField(max_length=100, null=True)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+    department = models.ForeignKey(Department, null=True)
+    shelf = models.CharField(editable=False, max_length=1000, null=True)
+    re_pr = models.CharField(editable=False, max_length=100, null=True)
 
     def __str__(self):
         return self.itemname
+
+

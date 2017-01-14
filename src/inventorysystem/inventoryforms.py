@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.admin import widgets
 from django.core.exceptions import ValidationError
+from django.template.defaultfilters import slugify
 from django.utils import timezone
 
 import models
@@ -9,10 +10,26 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
+class AddDepartmentForm(forms.ModelForm):
+    class Meta:
+        model = models.Department
+        exclude = ('short_name',)
+    def save(self):
+        instance = super(AddDepartmentForm, self).save(commit=False)
+        instance.short_name = slugify(instance.name)
+        instance.save()
+        return instance
+
+
+
 class AddItemForm(forms.ModelForm):
+
+    department = forms.ModelChoiceField(widget=forms.Select,
+                                  queryset=models.Department.objects.all())
+
     class Meta:
         model = models.ItemType
-        fields = ['name', 'total_quantity']
+        fields = ['name', 'total_quantity', 'department', 'product_classification', 'product_type']
 
 
 class IssueItemForm(forms.ModelForm):
