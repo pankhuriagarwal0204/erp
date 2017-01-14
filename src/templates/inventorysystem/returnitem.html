@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}{{ block.super }}Home{% endblock %}
+
+{% block navbar-left %}
+    {% include "_navbar.html" with active_link="home" %}
+{% endblock %}
+
+{% block navbar-right %}
+    {% if not user.is_authenticated %}
+        <a class="btn btn-default" href="{% url 'accounts:login' %}" role="button">Log in</a>
+        <a class="btn btn-primary" href="{% url 'accounts:signup' %}" role="button">Sign up</a>
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+
+{#{% block javascript %}#}
+{#    <script>#}
+{##}
+{#        $("#div_id_user").hide();#}
+{#        $("#div_id_quantity_returned").hide();#}
+{#        $("#id_item").change(function () {#}
+{#            item = $(this).val();#}
+{#            $.ajax({#}
+{#                url: "/api/fetchusers/" + item,#}
+{#                type: "GET",#}
+{#                success: function (data) {#}
+{#                    users = data.split(",");#}
+                    {#              console.log(users);#}
+{#                    $("#id_user").append($("<option></option>")#}
+{#                            .attr("value",'')#}
+{#                            .text('------'));#}
+{#                    for (i = 0; i < users.length; i++) {#}
+{#                        if(users[i] != 'None' && users[i] != '') {#}
+{#                            $("#id_user").append($("<option></option>")#}
+{#                            .attr("value", users[i])#}
+{#                            .text(users[i]));#}
+{#                        }#}
+{#                    }#}
+{##}
+{#                    $("#div_id_user").show();#}
+{#                    $("#div_id_quantity_returned").show();#}
+{#                }#}
+{##}
+{#            });#}
+{#        });#}
+{#    </script>#}
+{#{% endblock %}#}
+
+{% block container %}
+    {{ form.media }}
+    <div style="padding-top: 5%;width: 80%;height: 50%; float: left;">
+        <form method="post" action="">
+            {% csrf_token %}
+            {{ form | crispy }}
+            <input type="submit" value="Return Item">
+        </form>
+    </div>
+{% endblock %}

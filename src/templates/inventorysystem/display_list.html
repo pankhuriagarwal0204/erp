@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ block.super }}Home{% endblock %}
+
+{% block navbar-left %}
+    {% include "_navbar.html" with active_link="home" %}
+{% endblock %}
+
+{% block navbar-right %}
+    {% if not user.is_authenticated %}
+        <a class="btn btn-default" href="{% url 'accounts:login' %}" role="button">Log in</a>
+        <a class="btn btn-primary" href="{% url 'accounts:signup' %}" role="button">Sign up</a>
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+
+{% block container %}
+    <div style="padding-top: 5%; text-align: center;width: 80%;height: 50%; margin-left: 10%">
+        <h1>ITEM DETAILS</h1>
+        <table class="table table-bordered">
+            <tr>
+                <td>NAME</td>
+                <td>Total quantity</td>
+                <td>In stock quantity</td>
+                <td>Issued quantity</td>
+                <td>Status</td>
+            </tr>
+            {% for item in itemtypes %}
+                <tr>
+                    <td><a href="{% url 'inventory:itemlist' item.uuid %}">{{ item.name }}</a></td>
+                    <td>{{ item.total_quantity }}</td>
+                    <td>{{ item.in_stock_quantity }}</td>
+                    <td>{{ item.total_issued_quantity }}</td>
+                    <td>{{ item.status }}</td>
+                </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+
+{% endblock %}

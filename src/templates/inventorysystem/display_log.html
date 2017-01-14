@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ block.super }}Home{% endblock %}
+
+{% block navbar-left %}
+    {% include "_navbar.html" with active_link="home" %}
+{% endblock %}
+
+{% block navbar-right %}
+    {% if not user.is_authenticated %}
+        <a class="btn btn-default" href="{% url 'accounts:login' %}" role="button">Log in</a>
+        <a class="btn btn-primary" href="{% url 'accounts:signup' %}" role="button">Sign up</a>
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+
+{% block container %}
+    <div style="padding-top: 5%; text-align: center;width: 80%;height: 50%; margin-left: 10%">
+        <h1>ITEM LOG</h1>
+        <table class="table table-bordered">
+            <tr>
+                <td>Item Name</td>
+                <td>Issued to</td>
+                <td>Issued on</td>
+                <td>Quantity Issued</td>
+                <td>Returned by</td>
+                <td>Returned on</td>
+                <td>Quantity returned</td>
+                <td>Issued by</td>
+            </tr>
+            {% for item in items %}
+                <tr>
+                    <td>{{ item.history_object.name }}</td>
+                    <td>{{ item.history_object.issued_to }}</td>
+                    <td>{{ item.history_object.issued_on }}</td>
+                    <td>{{ item.history_object.quantity_issued }}</td>
+                    <td>{{ item.history_object.returned_by }}</td>
+                    <td>{{ item.history_object.returned_on }}</td>
+                    <td>{{ item.history_object.quantity_returned }}</td>
+                    <td>{{ item.history_user }}</td>
+                </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+
+{% endblock %}
